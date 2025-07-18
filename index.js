@@ -37,7 +37,10 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("/*splat", cors(corsOptions));
+app.options("/*splat", (req, res) => {
+  console.log("Preflight:", req.method, req.path, req.headers);
+  cors(corsOptions)(req, res, () => res.sendStatus(200));
+});
 
 //support json formate
 app.use(express.json());
