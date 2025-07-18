@@ -17,38 +17,15 @@ app.use((req, res, next) => {
   next();
 });
 
-// Updated CORS configuration for Railway deployment
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests from your frontend domain and localhost for development
-    const allowedOrigins = [
-      "http://localhost:3000",
-      "http://localhost:3001",
-      "http://localhost:5173", // Vite default
-      "http://localhost:5174", // Vite alternative port
-      "https://node-mern-production.up.railway.app",
-    ];
-
-    // Allow requests with no origin (mobile apps, etc.) OR if origin is in allowed list
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log("CORS blocked origin:", origin);
-      callback(null, true); // Temporarily allow all origins for debugging
-    }
-  },
+  origin: "http://localhost:5173",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  optionsSuccessStatus: 200,
-  preflightContinue: false,
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-app.use(cors(corsOptions));
-app.options("/*splat", (req, res) => {
-  console.log("Preflight:", req.method, req.path, req.headers);
-  cors(corsOptions)(req, res, () => res.sendStatus(200));
-});
+app.use(cors(corsOptions)); // Apply CORS first
+app.options("/*splat", cors(corsOptions));
 
 //support json formate
 app.use(express.json());
