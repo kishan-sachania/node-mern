@@ -45,6 +45,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // Configure helmet to work with cookies
 app.use(helmet({
