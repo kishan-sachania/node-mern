@@ -15,7 +15,7 @@ router.get("/otp-demo", (req, res) => {
   res.send("OTP system is integrated and working.");
 });
 
-router.get("/otp-demo/file.txt", (req, res) => {
+router.get("/otp-demo/fast2sms_verify.txt", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/fast2sms_verify.txt"));
 });
 
