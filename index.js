@@ -36,8 +36,7 @@ app.use("/todos", auth, todoRoute);
 
 
 //mongo URL
-const dbURL =
-  "mongodb+srv://admin:Test%40123@cluster0.g0fel.mongodb.net/Node_demo?retryWrites=true&w=majority&appName=Cluster0";
+const dbURL =process.env.MONGO_URI;
 
 //connect mongoDB
 mongoose
