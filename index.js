@@ -25,6 +25,7 @@ const corsOptions = {
       'http://localhost:3001',
       'http://localhost:5173', // Vite default
       'http://localhost:5174', // Vite alternative port
+      'https://node-mern-production.up.railway.app',
       
     ];
     
