@@ -1,6 +1,7 @@
 const UserModel = require("../../models/user/userSchema");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const { default: axios } = require("axios");
 
 //register
 const register_user = async (req, res) => {
@@ -64,18 +65,33 @@ const login_user = async (req, res) => {
   }
 };
 
+//send otp
+const send_otp = async (req, res) => {
+  try {
+    const mobileNumber = req.body.mobileNumber;
+    const otp = Math.floor(100000 + Math.random() * 900000);
+    console.log(mobileNumber, otp);
+    await axios.get("https://www.fast2sms.com/dev/bulkV2", {
+      params: {
+        authorization: process.env.FAST_API_KEY,
+        route: "otp",
+        variables_values: otp.toString(),
+        numbers: mobileNumber,
+      },
+      headers: { "cache-control": "no-cache" },
+    });
+    res.json({ success: true, message: "OTP send successfully!" });
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    res.status(500).json({ success: false, message: "Failed to send OTP." });
+  }
+};
+
 //verify token
 const auth = (req, res, next) => {
   // Try cookie first, then Authorization header
   let token = req.cookies.authToken;
   console.log("Cookie token:", token);
-
-  if (!token) {
-    const authHeader = req.headers.authorization;
-    if (authHeader && authHeader.startsWith("Bearer ")) {
-      token = authHeader.substring(7); // Remove 'Bearer ' prefix
-    }
-  }
 
   console.log("Final token:", token);
   console.log("All cookies:", req.cookies);
@@ -98,4 +114,5 @@ module.exports = {
   register_user,
   login_user,
   auth,
+  send_otp,
 };

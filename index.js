@@ -9,14 +9,6 @@ const { auth } = require("./controllers/UserController/userController");
 const cookieParser = require("cookie-parser");
 const app = express();
 
-app.use((req, res, next) => {
-  console.log("→ Request:", req.method, req.originalUrl, req.headers);
-  res.on("finish", () => {
-    console.log("← Response:", res.statusCode, res.getHeaders());
-  });
-  next();
-});
-
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -41,10 +33,7 @@ app.use(
 app.use("/auth", userRoute);
 app.use("/todos", auth, todoRoute);
 
-// Health check endpoint
-app.get("/health", (req, res) => {
-  res.json({ status: "OK", timestamp: new Date().toISOString() });
-});
+
 
 //mongo URL
 const dbURL =
