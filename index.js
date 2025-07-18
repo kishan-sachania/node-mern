@@ -13,18 +13,57 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-//handle cors
+//handle cors and cookies
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: (o, cb) => cb(null, o),
-    credentials: true,
-  })
-);
-app.use(helmet());
+
+// Updated CORS configuration for Railway deployment
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests from your frontend domain and localhost for development
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:5173', // Vite default
+      
+    ];
+    
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+// Configure helmet to work with cookies
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
+// Add middleware to log requests for debugging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`, {
+    origin: req.headers.origin,
+    cookies: req.cookies,
+    userAgent: req.headers['user-agent']
+  });
+  next();
+});
 
 app.use("/auth", userRoute);
 app.use("/todos", auth, todoRoute);
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({ status: "OK", timestamp: new Date().toISOString() });
+});
 
 //mongo URL
 const dbURL =
@@ -34,10 +73,12 @@ const dbURL =
 mongoose
   .connect(dbURL)
   .then(() => {
-    app.listen(3000, () => {
-      console.log("server listening on 3000");
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   })
   .catch((err) => {
-    console.error(err);
+    console.error("Database connection error:", err);
   });
