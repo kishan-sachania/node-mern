@@ -61,10 +61,12 @@ const login_user = async (req, res) => {
     // };
 
     // Set cookie with appropriate settings for Railway
-    res.cookie("authToken", token),
-      {
-        maxAge: 3600000,
-      };
+    res.cookie("authToken", token, {
+      maxAge: 3600000,
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
 
     console.log("Response headers:", res.getHeaders());
     res.status(200).json({ message: "Login Success", token }); // Also return token for debugging

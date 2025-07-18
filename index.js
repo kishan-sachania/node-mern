@@ -45,12 +45,17 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 
 // Configure helmet to work with cookies
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
+
+app.use((req, res, next) => {
+  console.log("Request origin:", req.headers.origin);
+  console.log("Request path:", req.path);
+  next();
+});
 
 // Add middleware to log requests for debugging
 app.use((req, res, next) => {
