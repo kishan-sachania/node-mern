@@ -48,27 +48,15 @@ const login_user = async (req, res) => {
       expiresIn: "1h",
     });
 
-    // // Check if we're in production (Railway) or development
-    // const isProduction = process.env.NODE_ENV === "production";
-
-    // // For Railway deployment with local frontend testing
-    // const cookieSettings = {
-    //   httpOnly: true,
-    //   secure: isProduction, // Only secure in production
-    //   sameSite: isProduction ? "None" : "Lax", // None for cross-origin in production
-    //   maxAge: 3600000, // 1 hour
-    //   path: "/",
-    // };
-
     // Set cookie with appropriate settings for Railway
     res.cookie("authToken", token, {
-      maxAge: 3600000,
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      path: "/",
+      secure: false,
+      sameSite: "lax",
+      maxAge: 3600000,
     });
 
-    console.log("Response headers:", res.getHeaders());
     res.status(200).json({ message: "Login Success", token }); // Also return token for debugging
   } catch (err) {
     console.error("Login error:", err);

@@ -17,15 +17,12 @@ app.use((req, res, next) => {
   next();
 });
 
-const corsOptions = {
-  origin: "http://localhost:5173",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions)); // Apply CORS first
-app.options("/*splat", cors(corsOptions));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 //support json formate
 app.use(express.json());
@@ -40,12 +37,6 @@ app.use(
     crossOriginResourcePolicy: { policy: "cross-origin" },
   })
 );
-
-app.use((req, res, next) => {
-  console.log("Request origin:", req.headers.origin);
-  console.log("Request path:", req.path);
-  next();
-});
 
 app.use("/auth", userRoute);
 app.use("/todos", auth, todoRoute);
