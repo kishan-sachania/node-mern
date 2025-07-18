@@ -30,7 +30,7 @@ const login_user = async (req, res) => {
   try {
     const { username, password } = req.body;
     console.log("Login attempt for username:", username);
-    
+
     const user = await UserModel.findOne({ username });
 
     if (!user) {
@@ -39,7 +39,7 @@ const login_user = async (req, res) => {
 
     const passMatch = await bcrypt.compare(password, user.password);
     console.log("Password match result:", passMatch);
-    
+
     if (!passMatch) {
       return res.status(401).json({ message: "Password is incorrect" });
     }
@@ -48,29 +48,24 @@ const login_user = async (req, res) => {
       expiresIn: "1h",
     });
 
-    // Check if we're in production (Railway) or development
-    const isProduction = process.env.NODE_ENV === 'production';
-    
-    // For Railway deployment with local frontend testing
-    const cookieSettings = {
-      httpOnly: true,
-      secure: isProduction, // Only secure in production
-      sameSite: isProduction ? "None" : "Lax", // None for cross-origin in production
-      maxAge: 3600000, // 1 hour
-      path: "/",
-    };
-    
-    // Set cookie with appropriate settings for Railway
-    res.cookie("authToken", token, cookieSettings);
+    // // Check if we're in production (Railway) or development
+    // const isProduction = process.env.NODE_ENV === "production";
 
-    console.log("Cookie set with settings:", {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "None" : "Lax",
-      maxAge: 3600000,
-      path: "/",
-    });
-    
+    // // For Railway deployment with local frontend testing
+    // const cookieSettings = {
+    //   httpOnly: true,
+    //   secure: isProduction, // Only secure in production
+    //   sameSite: isProduction ? "None" : "Lax", // None for cross-origin in production
+    //   maxAge: 3600000, // 1 hour
+    //   path: "/",
+    // };
+
+    // Set cookie with appropriate settings for Railway
+    res.cookie("authToken", token),
+      {
+        maxAge: 3600000,
+      };
+
     console.log("Response headers:", res.getHeaders());
     res.status(200).json({ message: "Login Success", token }); // Also return token for debugging
   } catch (err) {
@@ -84,7 +79,7 @@ const auth = (req, res, next) => {
   // Try cookie first, then Authorization header
   let token = req.cookies.authToken;
   console.log("Cookie token:", token);
-  
+
   if (!token) {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
