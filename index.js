@@ -9,6 +9,9 @@ const { auth } = require("./controllers/UserController/userController");
 const cookieParser = require("cookie-parser");
 const app = express();
 
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on ${PORT}`));
+
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -33,10 +36,8 @@ app.use(
 app.use("/auth", userRoute);
 app.use("/todos", auth, todoRoute);
 
-
-
 //mongo URL
-const dbURL =process.env.MONGO_URI;
+const dbURL = process.env.MONGO_URI;
 
 //connect mongoDB
 mongoose
